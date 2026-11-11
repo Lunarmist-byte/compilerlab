@@ -1,34 +1,30 @@
 
 %{
-#include <stdio.h>
-int line = 1;
+#include<stdio.h>
+int line=1;
 %}
 
 %%
-\n                                          { line++; }
-[ \t]+                                      ;
-"#".*                                       ;
-"//".*                                      ;
-"/*"([^*]|\*+[^*/])*\*+"/"                  ;
+\n                  { line++; }
+[ \t]+              ;
+"int"|"float"|"char"|"if"|"else"|"while"|"return"
+                    { printf("KEYWORD: %s\n",yytext); }
 
-"int"|"float"|"char"|"if"|"else"|"while"|"for"|"return"|"void"
-                                            { printf("Line %d: KEYWORD\t\t%s\n", line, yytext); }
+[a-zA-Z][a-zA-Z0-9]*
+                    { printf("IDENTIFIER: %s\n",yytext); }
 
-[a-zA-Z_][a-zA-Z0-9_]*                      { printf("Line %d: IDENTIFIER\t%s\n", line, yytext); }
+[0-9]+              { printf("NUMBER: %s\n",yytext); }
 
-[0-9]+(\.[0-9]+)?                           { printf("Line %d: NUMBER\t\t%s\n", line, yytext); }
+"="                 { printf("ASSIGNMENT OPERATOR: %s\n",yytext); }
 
-\"[^\"\n]*\"                                { printf("Line %d: STRING\t\t%s\n", line, yytext); }
+"+"|"-"|"*"|"/"     { printf("ARITHMETIC OPERATOR: %s\n",yytext); }
 
-"=="|"!="|"<="|">="|"<"|">"                 { printf("Line %d: RELATIONAL OP\t%s\n", line, yytext); }
+"<"|">"|"=="|"!="   { printf("RELATIONAL OPERATOR: %s\n",yytext); }
 
-"="                                         { printf("Line %d: ASSIGNMENT OP\t%s\n", line, yytext); }
+";"|","|"("|")"|"{"|"}"
+                    { printf("SPECIAL SYMBOL: %s\n",yytext); }
 
-"+"|"-"|"*"|"/"|"%"                         { printf("Line %d: ARITHMETIC OP\t%s\n", line, yytext); }
-
-[;,(){}\[\]]                                { printf("Line %d: SPECIAL SYMBOL\t%s\n", line, yytext); }
-
-.                                           { printf("Line %d: UNKNOWN\t\t%s\n", line, yytext); }
+.                   { printf("UNKNOWN: %s\n",yytext); }
 %%
 
 int yywrap() {
@@ -36,15 +32,6 @@ int yywrap() {
 }
 
 int main() {
-    yyin = fopen("input.c", "r");
-
-    if (!yyin) {
-        printf("Create input.c first!\n");
-        return 1;
-    }
-
     yylex();
-    fclose(yyin);
-
     return 0;
 }

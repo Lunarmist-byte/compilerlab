@@ -1,52 +1,38 @@
-
-#include<stdio.h>
-#include<string.h>
+#include <stdio.h>
 
 int main() {
-    int n,i;
-    char lhs[20],rhs[30];
-    char arg1[20],arg2[20],op;
+    char str[50];
+    char res, arg1, op, arg2;
 
-    printf("Enter the number of TAC statements: ");
-    scanf("%d",&n);
-
-    printf("Enter the TAC statements:\n");
-
-    for(i=0;i<n;i++) {
-        scanf("%19[^=]=%29s",lhs,rhs);
-        getchar();
-
-        int j;
-        for(j=0;rhs[j];j++) {
-            if(rhs[j]=='+' || rhs[j]=='-' ||
-               rhs[j]=='*' || rhs[j]=='/')
-                break;
-        }
-
+    printf("Enter the three address code: ");
+    if (scanf("%s", str) != 1) {
+        return 1;
+    }
+    if (sscanf(str, "%c=%c%c%c", &res, &arg1, &op, &arg2) == 4) {
         printf("\n");
+        printf("MOV R0,%c\n", arg1);
 
-        if(rhs[j]!='\0') {
-            op=rhs[j];
-            rhs[j]='\0';
-
-            strcpy(arg1,rhs);
-            strcpy(arg2,rhs+j+1);
-
-            printf("MOV AX,%s\n",arg1);
-
-            switch(op) {
-                case '+': printf("ADD AX,%s\n",arg2); break;
-                case '-': printf("SUB AX,%s\n",arg2); break;
-                case '*': printf("MUL %s\n",arg2); break;
-                case '/': printf("DIV %s\n",arg2); break;
-            }
-
-            printf("MOV %s,AX\n",lhs);
+        switch (op) {
+            case '+':
+                printf("ADD R0,%c\n", arg2);
+                break;
+            case '-':
+                printf("SUB R0,%c\n", arg2);
+                break;
+            case '*':
+                printf("MUL R0,%c\n", arg2);
+                break;
+            case '/':
+                printf("DIV R0,%c\n", arg2);
+                break;
+            default:
+                printf("; Unknown operator\n");
+                return 1;
         }
-        else {
-            printf("MOV AX,%s\n",rhs);
-            printf("MOV %s,AX\n",lhs);
-        }
+
+        printf("MOV %c,R0\n", res);
+    } else {
+        printf("Invalid three address code format.\n");
     }
 
     return 0;

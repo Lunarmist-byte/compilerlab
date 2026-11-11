@@ -2,41 +2,51 @@
 #include<stdio.h>
 #include<string.h>
 
-int main(){
-    char str[50];
-    char res,arg1,op,arg2;
+int main() {
+    int n,i;
+    char lhs[20],rhs[30];
+    char arg1[20],arg2[20],op;
 
-    printf("Enter the TAC: ");
+    printf("Enter the number of TAC statements: ");
+    scanf("%d",&n);
 
-    if(scanf("%49s",str)!=1)
-        return 1;
+    printf("Enter the TAC statements:\n");
 
-    if(sscanf(str,"%c=%c%c%c",&res,&arg1,&op,&arg2)==4){
-        printf("\n");
-        printf("MOV R0,%c\n",arg1);
+    for(i=0;i<n;i++) {
+        scanf("%19[^=]=%29s",lhs,rhs);
+        getchar();
 
-        switch(op){
-            case '+':
-                printf("ADD R0,%c\n",arg2);
+        int j;
+        for(j=0;rhs[j];j++) {
+            if(rhs[j]=='+' || rhs[j]=='-' ||
+               rhs[j]=='*' || rhs[j]=='/')
                 break;
-            case '-':
-                printf("SUB R0,%c\n",arg2);
-                break;
-            case '*':
-                printf("MUL R0,%c\n",arg2);
-                break;
-            case '/':
-                printf("DIV R0,%c\n",arg2);
-                break;
-            default:
-                printf("Unknown Operator\n");
-                return 1;
         }
 
-        printf("MOV %c,R0\n",res);
-    }
-    else{
-        printf("Invalid three address code format.\n");
+        printf("\n");
+
+        if(rhs[j]!='\0') {
+            op=rhs[j];
+            rhs[j]='\0';
+
+            strcpy(arg1,rhs);
+            strcpy(arg2,rhs+j+1);
+
+            printf("MOV AX,%s\n",arg1);
+
+            switch(op) {
+                case '+': printf("ADD AX,%s\n",arg2); break;
+                case '-': printf("SUB AX,%s\n",arg2); break;
+                case '*': printf("MUL %s\n",arg2); break;
+                case '/': printf("DIV %s\n",arg2); break;
+            }
+
+            printf("MOV %s,AX\n",lhs);
+        }
+        else {
+            printf("MOV AX,%s\n",rhs);
+            printf("MOV %s,AX\n",lhs);
+        }
     }
 
     return 0;
